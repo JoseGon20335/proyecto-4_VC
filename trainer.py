@@ -9,8 +9,11 @@ from tensorflow.keras.utils import to_categorical
 # Carga los datos procesados desde un archivo pickle
 dataDict = pickle.load(open('./data.pickle', 'rb'))
 
-# Convierte los datos y las etiquetas a arrays de numpy
-data = np.asarray(dataDict['data'])
+# Verifica la longitud máxima de las secuencias en los datos
+max_length = max(len(seq) for seq in dataDict['data'])
+
+# Rellena las secuencias más cortas con ceros (o un valor de relleno adecuado)
+data = np.array([np.pad(seq, (0, max_length - len(seq)), 'constant') for seq in dataDict['data']])
 labels = np.asarray(dataDict['labels'])
 
 # Normaliza los datos
@@ -39,5 +42,5 @@ model.fit(xTrain, yTrain, epochs=20, batch_size=32, validation_split=0.2)
 score = model.evaluate(xTest, yTest, verbose=0)
 print('{}% de la data ha sido procesada con éxito.'.format(score[1] * 100))
 
-# Guarda el modelo entrenado en un archivo pickle
+# Guarda el modelo entrenado en un archivo HDF5
 model.save('model.h5')

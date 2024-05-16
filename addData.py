@@ -8,7 +8,7 @@ import cv2
 dataDirectory = './imgs'
 
 # Número de clases y tamaño del conjunto de datos
-numClasses = 3
+numClasses = 26
 imagesPerClass = 100
 
 # Índice de la cámara a utilizar - este valor default es 0 pero se puede cambiar en caso de fallo
