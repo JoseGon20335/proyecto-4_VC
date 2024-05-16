@@ -1,31 +1,33 @@
-import pickle
+# Proyecto # 4 - Vision por computadora
+# @ inference.py - encargado de correr el modelo.
 
+import pickle
 import cv2
 import mediapipe as mp
 import numpy as np
 
 # Carga el modelo entrenado desde un archivo pickle
-model_dict = pickle.load(open('./model.p', 'rb'))
-model = model_dict['model']
+modelDict = pickle.load(open('./model.p', 'rb'))
+model = modelDict['model']
 
 # Inicializa la captura de video desde la cámara
 cap = cv2.VideoCapture(2)
 
 # Inicialización de mediapipe para detección de manos
-mp_hands = mp.solutions.hands
-mp_drawing = mp.solutions.drawing_utils
-mp_drawing_styles = mp.solutions.drawing_styles
+mpHands = mp.solutions.hands
+mpDrawing = mp.solutions.drawing_utils
+mpDrawingStyles = mp.solutions.drawing_styles
 
 # Configuración del módulo de manos de mediapipe
-hands = mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.3)
+handsDetector = mpHands.Hands(static_image_mode=True, min_detection_confidence=0.3)
 
 # Diccionario de etiquetas para las predicciones
-labels_dict = {0: 'A', 1: 'B', 2: 'L'}
+labelsDict = {0: 'A', 1: 'B', 2: 'L'}
 
 while True:
-    data_aux = []  # Lista auxiliar para almacenar coordenadas normalizadas
-    x_ = []  # Lista para almacenar coordenadas x de los puntos de referencia
-    y_ = []  # Lista para almacenar coordenadas y de los puntos de referencia
+    dataAux = []  # Lista auxiliar para almacenar coordenadas normalizadas
+    xCoordinates = []  # Lista para almacenar coordenadas x de los puntos de referencia
+    yCoordinates = []  # Lista para almacenar coordenadas y de los puntos de referencia
 
     # Captura un frame de la cámara
     ret, frame = cap.read()
@@ -35,51 +37,46 @@ while True:
     H, W, _ = frame.shape  # Obtiene las dimensiones del frame
 
     # Convierte el frame a RGB
-    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    frameRgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
     # Procesa el frame para detectar manos
-    results = hands.process(frame_rgb)
+    results = handsDetector.process(frameRgb)
     if results.multi_hand_landmarks:
         # Dibuja las conexiones de las manos en el frame
-        for hand_landmarks in results.multi_hand_landmarks:
-            mp_drawing.draw_landmarks(
+        for handLandmarks in results.multi_hand_landmarks:
+            mpDrawing.draw_landmarks(
                 frame,  # imagen para dibujar
-                hand_landmarks,  # salida del modelo
-                mp_hands.HAND_CONNECTIONS,  # conexiones de la mano
-                mp_drawing_styles.get_default_hand_landmarks_style(),
-                mp_drawing_styles.get_default_hand_connections_style())
+                handLandmarks,  # salida del modelo
+                mpHands.HAND_CONNECTIONS,  # conexiones de la mano
+                mpDrawingStyles.get_default_hand_landmarks_style(),
+                mpDrawingStyles.get_default_hand_connections_style())
 
         # Procesa los puntos de referencia de las manos detectadas
-        for hand_landmarks in results.multi_hand_landmarks:
-            for i in range(len(hand_landmarks.landmark)):
-                x = hand_landmarks.landmark[i].x
-                y = hand_landmarks.landmark[i].y
+        for handLandmarks in results.multi_hand_landmarks:
+            for landmark in handLandmarks.landmark:
+                xCoordinates.append(landmark.x)
+                yCoordinates.append(landmark.y)
 
-                x_.append(x)
-                y_.append(y)
-
-            for i in range(len(hand_landmarks.landmark)):
-                x = hand_landmarks.landmark[i].x
-                y = hand_landmarks.landmark[i].y
-                data_aux.append(x - min(x_))
-                data_aux.append(y - min(y_))
+            # Normaliza las coordenadas de los puntos de referencia
+            for landmark in handLandmarks.landmark:
+                dataAux.append(landmark.x - min(xCoordinates))
+                dataAux.append(landmark.y - min(yCoordinates))
 
         # Calcula las coordenadas del rectángulo delimitador
-        x1 = int(min(x_) * W) - 10
-        y1 = int(min(y_) * H) - 10
-
-        x2 = int(max(x_) * W) - 10
-        y2 = int(max(y_) * H) - 10
+        x1 = int(min(xCoordinates) * W) - 10
+        y1 = int(min(yCoordinates) * H) - 10
+        x2 = int(max(xCoordinates) * W) - 10
+        y2 = int(max(yCoordinates) * H) - 10
 
         # Realiza una predicción con el modelo
-        prediction = model.predict([np.asarray(data_aux)])
+        prediction = model.predict([np.asarray(dataAux)])
 
         # Obtiene el carácter predicho
-        predicted_character = labels_dict[int(prediction[0])]
+        predictedCharacter = labelsDict[int(prediction[0])]
 
         # Dibuja el rectángulo y la etiqueta en el frame
         cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 0), 4)
-        cv2.putText(frame, predicted_character, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 0), 3, cv2.LINE_AA)
+        cv2.putText(frame, predictedCharacter, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 0), 3, cv2.LINE_AA)
 
     # Muestra el frame con las anotaciones
     cv2.imshow('frame', frame)
