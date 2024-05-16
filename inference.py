@@ -1,15 +1,11 @@
-# Proyecto # 4 - Vision por computadora
-# @ inference.py - encargado de correr el modelo.
-
-import pickle
 import cv2
 import mediapipe as mp
 import numpy as np
+from tensorflow.keras.models import load_model
 
-# Carga el modelo entrenado desde un archivo pickle
+# Carga el modelo entrenado desde un archivo HDF5
 try:
-    modelDict = pickle.load(open('./model.p', 'rb'))
-    model = modelDict['model']
+    model = load_model('./model.h5')
     print("Modelo cargado exitosamente.")
 except Exception as e:
     print(f"Error al cargar el modelo: {e}")
@@ -79,12 +75,16 @@ while True:
             y2 = int(max(yCoordinates) * H) - 10
 
             try:
+                # Normaliza los datos de entrada
+                dataAux = np.asarray(dataAux).reshape(1, -1) / np.max(dataAux)
+
                 # Realiza una predicción con el modelo
-                prediction = model.predict([np.asarray(dataAux)])
+                prediction = model.predict(dataAux)
+                predictedIndex = np.argmax(prediction)
                 print(f"Predicción: {prediction}")
 
                 # Obtiene el carácter predicho
-                predictedCharacter = labelsDict[int(prediction[0])]
+                predictedCharacter = labelsDict[predictedIndex]
                 print(f"Carácter predicho: {predictedCharacter}")
 
                 # Dibuja el rectángulo y la etiqueta en el frame

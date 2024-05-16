@@ -1,11 +1,10 @@
-# Proyecto # 4 - Vision por computadora
-# @ trainer.py - encargado de hacer el entrenamiento a partir del pickle generado.
-
 import pickle
-from sklearn.ensemble import RandomForestClassifier
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-import numpy as np
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.utils import to_categorical
 
 # Carga los datos procesados desde un archivo pickle
 dataDict = pickle.load(open('./data.pickle', 'rb'))
@@ -14,24 +13,31 @@ dataDict = pickle.load(open('./data.pickle', 'rb'))
 data = np.asarray(dataDict['data'])
 labels = np.asarray(dataDict['labels'])
 
+# Normaliza los datos
+data = data / np.max(data)
+
+# Convierte las etiquetas a one-hot encoding
+num_classes = len(np.unique(labels))
+labels = to_categorical(labels, num_classes)
+
 # Divide los datos en conjuntos de entrenamiento y prueba, manteniendo la proporción de clases
 xTrain, xTest, yTrain, yTest = train_test_split(data, labels, test_size=0.2, shuffle=True, stratify=labels)
 
-# Inicializa el modelo de Random Forest
-model = RandomForestClassifier()
+# Define la arquitectura de la red neuronal
+model = Sequential()
+model.add(Dense(128, input_dim=xTrain.shape[1], activation='relu'))
+model.add(Dense(64, activation='relu'))
+model.add(Dense(num_classes, activation='softmax'))
+
+# Compila el modelo
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 # Entrena el modelo con los datos de entrenamiento
-model.fit(xTrain, yTrain)
+model.fit(xTrain, yTrain, epochs=20, batch_size=32, validation_split=0.2)
 
-# Realiza predicciones con los datos de prueba
-yPredict = model.predict(xTest)
-
-# Calcula la precisión de las predicciones
-score = accuracy_score(yPredict, yTest)
-
-# Imprime el porcentaje de muestras clasificadas correctamente
-print('{}% de la data ha sido procesada con exito.'.format(score * 100))
+# Evalúa el modelo con los datos de prueba
+score = model.evaluate(xTest, yTest, verbose=0)
+print('{}% de la data ha sido procesada con éxito.'.format(score[1] * 100))
 
 # Guarda el modelo entrenado en un archivo pickle
-with open('model.p', 'wb') as pickleFile:
-    pickle.dump({'model': model}, pickleFile)
+model.save('model.h5')
