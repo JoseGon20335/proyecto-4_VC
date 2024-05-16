@@ -7,11 +7,19 @@ import mediapipe as mp
 import numpy as np
 
 # Carga el modelo entrenado desde un archivo pickle
-modelDict = pickle.load(open('./model.p', 'rb'))
-model = modelDict['model']
+try:
+    modelDict = pickle.load(open('./model.p', 'rb'))
+    model = modelDict['model']
+    print("Modelo cargado exitosamente.")
+except Exception as e:
+    print(f"Error al cargar el modelo: {e}")
+    exit()
 
 # Inicializa la captura de video desde la cámara
-cap = cv2.VideoCapture(2)
+cap = cv2.VideoCapture(0)
+if not cap.isOpened():
+    print("Error: No se pudo abrir la cámara.")
+    exit()
 
 # Inicialización de mediapipe para detección de manos
 mpHands = mp.solutions.hands
@@ -32,6 +40,7 @@ while True:
     # Captura un frame de la cámara
     ret, frame = cap.read()
     if not ret:
+        print("Error: No se pudo capturar el frame.")
         break
 
     H, W, _ = frame.shape  # Obtiene las dimensiones del frame
@@ -62,21 +71,27 @@ while True:
                 dataAux.append(landmark.x - min(xCoordinates))
                 dataAux.append(landmark.y - min(yCoordinates))
 
-        # Calcula las coordenadas del rectángulo delimitador
-        x1 = int(min(xCoordinates) * W) - 10
-        y1 = int(min(yCoordinates) * H) - 10
-        x2 = int(max(xCoordinates) * W) - 10
-        y2 = int(max(yCoordinates) * H) - 10
+        if dataAux:
+            # Calcula las coordenadas del rectángulo delimitador
+            x1 = int(min(xCoordinates) * W) - 10
+            y1 = int(min(yCoordinates) * H) - 10
+            x2 = int(max(xCoordinates) * W) - 10
+            y2 = int(max(yCoordinates) * H) - 10
 
-        # Realiza una predicción con el modelo
-        prediction = model.predict([np.asarray(dataAux)])
+            try:
+                # Realiza una predicción con el modelo
+                prediction = model.predict([np.asarray(dataAux)])
+                print(f"Predicción: {prediction}")
 
-        # Obtiene el carácter predicho
-        predictedCharacter = labelsDict[int(prediction[0])]
+                # Obtiene el carácter predicho
+                predictedCharacter = labelsDict[int(prediction[0])]
+                print(f"Carácter predicho: {predictedCharacter}")
 
-        # Dibuja el rectángulo y la etiqueta en el frame
-        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 0), 4)
-        cv2.putText(frame, predictedCharacter, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 0), 3, cv2.LINE_AA)
+                # Dibuja el rectángulo y la etiqueta en el frame
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 0), 4)
+                cv2.putText(frame, predictedCharacter, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 0), 3, cv2.LINE_AA)
+            except Exception as e:
+                print(f"Error en la predicción: {e}")
 
     # Muestra el frame con las anotaciones
     cv2.imshow('frame', frame)
