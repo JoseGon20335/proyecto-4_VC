@@ -11,8 +11,8 @@ dataDirectory = './imgs'
 numClasses = 3
 imagesPerClass = 100
 
-# Índice de la cámara a utilizar
-cameraIndex = 2
+# Índice de la cámara a utilizar - este valor default es 0 pero se puede cambiar en caso de fallo
+cameraIndex = 0
 
 def createDirectory(path):
     """
@@ -35,7 +35,7 @@ def captureImagesForClass(classId, imagesCount, camera):
         if not ret or frame is None:
             print("Error: No se pudo capturar la imagen.")
             continue
-        cv2.putText(frame, 'Presiona "X" para empezar.', (100, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 255, 0), 3, cv2.LINE_AA)
+        cv2.putText(frame, 'Presiona "X" para empezar.', (100, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 3, cv2.LINE_AA)
         cv2.imshow('frame', frame)
         if cv2.waitKey(25) == ord('x'):
             break
@@ -57,7 +57,7 @@ def main():
     # Abre la cámara
     camera = cv2.VideoCapture(cameraIndex)
     if not camera.isOpened():
-        print("Error: No se pudo abrir la cámara.")
+        print("Error: No se pudo abrir la cámara. Prueba cambiar el cameraIndex")
         return
 
     # Captura imágenes para cada clase

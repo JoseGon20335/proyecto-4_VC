@@ -30,7 +30,7 @@ yPredict = model.predict(xTest)
 score = accuracy_score(yPredict, yTest)
 
 # Imprime el porcentaje de muestras clasificadas correctamente
-print('{}% of samples were classified correctly!'.format(score * 100))
+print('{}% de la data ha sido procesada con exito.'.format(score * 100))
 
 # Guarda el modelo entrenado en un archivo pickle
 with open('model.p', 'wb') as pickleFile:
