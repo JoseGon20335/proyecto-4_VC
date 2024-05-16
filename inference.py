@@ -72,7 +72,11 @@ while True:
                 dataAux.append(landmark.x - min(xCoordinates))
                 dataAux.append(landmark.y - min(yCoordinates))
 
-        if dataAux:
+        # Asegúrate de que dataAux tenga 84 elementos (42 por mano)
+        while len(dataAux) < 84:
+            dataAux.append(0)
+
+        if len(dataAux) == 84:
             # Calcula las coordenadas del rectángulo delimitador
             x1 = int(min(xCoordinates) * W) - 10
             y1 = int(min(yCoordinates) * H) - 10
