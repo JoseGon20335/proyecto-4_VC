@@ -45,10 +45,10 @@ labels = to_categorical(labels, num_classes)                                    
 xTrain, xTest, yTrain, yTest = train_test_split(data, labels, test_size=0.2, shuffle=True, stratify=labels) # Se dividen los datos en entrenamiento y prueba
 
 
-model = Sequential()                                                        # Se crea un modelo de red neuronal secuencial / feedforward
-model.add(Dense(128, input_dim=xTrain.shape[1], activation='relu'))         # Capa densa de 128 neuronas con función de activación ReLU
-model.add(Dense(64, activation='relu'))                                     # Capa densa de 64 neuronas con función de activación ReLU
-model.add(Dense(num_classes, activation='softmax'))                         # Capa densa de salida con función de activación Softmax (clasificación multiclase)
+model = Sequential()                                                                    # Se crea un modelo de red neuronal secuencial / feedforward
+model.add(Dense(128, input_dim=xTrain.shape[1], activation='relu'))                     # Capa densa de 128 neuronas con función de activación ReLU
+model.add(Dense(64, activation='relu'))                                                 # Capa densa de 64 neuronas con función de activación ReLU
+model.add(Dense(num_classes, activation='softmax'))                                     # Capa densa de salida con función de activación Softmax (clasificación multiclase)
 
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])  # Se compila el modelo con función de pérdida para clasificación multiclase
 
