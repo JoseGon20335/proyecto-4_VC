@@ -1,72 +1,99 @@
-# Proyecto # 4 - Vision por computadora
-# @ addData.py - encargado de crear y cargar data dentro de la carpeta de ./imgs
+# ----------------------------------------------------------------------
+
+# Visión por Computadora
+# Proyecto 4: Detección de Alfabeto de LENSEGUA
+
+# Archivo: addData.py
+# Descripción: Este programa se encarga de recolectar datos para el entrenamiento del modelo. 
+#              Se enciende la cámara y se capturan imágenes de las manos realizando los signos del 
+#              alfabeto de LENSEGUA.
+
+# Autores:
+# Stefano Alberto Aragoni Maldonado - 20261
+# Carol Andreé Arévalo Estrada - 20461
+# José Miguel González González - 20335
+# Luis Diego Santos Cuellar - 20226
+
+# ----------------------------------------------------------------------
+# IMPORTAR LIBRERÍAS
 
 import os
 import cv2
 
-# Directorio donde se almacenarán los datos
-dataDirectory = './imgs'
+# ------------------------------------------------------------------
+# VARIABLES GLOBALES
 
-# Número de clases y tamaño del conjunto de datos
-numClasses = 26
-imagesPerClass = 100
+dataDirectory = './imgs'                            # Directorio donde se guardarán las imágenes
 
-# Índice de la cámara a utilizar - este valor default es 0 pero se puede cambiar en caso de fallo
-cameraIndex = 0
+numClasses = 26                                     # Número de clases (letras del alfabeto)
+imagesPerClass = 100                                # Número de imágenes a capturar por clase
 
+cameraIndex = 0                                     # Índice de la cámara
+
+# ------------------------------------------------------------------
+# FUNCIONES
+
+"""
+Función: createDirectory
+Descripción: Crea un directorio en la ruta especificada si no existe.
+Parámetros:
+     path: ruta del directorio que se desea crear.
+"""
 def createDirectory(path):
-    """
-    Crea un directorio si no existe.
-    """
-    if not os.path.exists(path):
-        os.makedirs(path)
+    if not os.path.exists(path):                    # Si el directorio no existe, lo crea
+        os.makedirs(path)                           # Crea el directorio       
 
+"""
+Función: captureImagesForClass
+Descripción: Captura imágenes para una clase específica y las guarda en el directorio correspondiente.
+Parámetros:
+     classId: identificador de la clase para la que se capturan las imágenes.
+     imagesCount: número de imágenes a capturar.
+     camera: objeto de captura de video (cv2.VideoCapture).
+"""
 def captureImagesForClass(classId, imagesCount, camera):
-    """
-    Captura imágenes para una clase específica y las guarda en el directorio correspondiente.
-    """
-    classDirectory = os.path.join(dataDirectory, str(classId))
-    createDirectory(classDirectory)
-    print(f'Recolectando datos para la clase {classId}')
+    classDirectory = os.path.join(dataDirectory, str(classId))              # Se define el directorio de la clase
+    createDirectory(classDirectory)                                         # Crea el directorio de la clase
+    print(f'Recolectando datos para la clase {classId}')                    
 
-    # Muestra el mensaje de preparación hasta que el usuario presione 'x'
-    while True:
-        ret, frame = camera.read()
-        if not ret or frame is None:
+    while True:                                                             # Espera a que el usuario presione "X" para empezar              
+        ret, frame = camera.read()                                          # Captura un frame de la cámara
+        if not ret or frame is None:                                        # Si no se pudo capturar el frame, muestra un mensaje de error
             print("Error: No se pudo capturar la imagen.")
             continue
-        cv2.putText(frame, 'Presiona "X" para empezar.', (100, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 3, cv2.LINE_AA)
-        cv2.imshow('frame', frame)
-        if cv2.waitKey(25) == ord('x'):
+
+        cv2.putText(frame, 'Presiona "X" para empezar.', (100, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 3, cv2.LINE_AA)     # Muestra un mensaje en el frame
+        cv2.imshow('frame', frame)                                          # Muestra el frame en una ventana
+        if cv2.waitKey(25) == ord('x'):                                     # Si el usuario presiona "X", se rompe el ciclo
             break
 
-    # Captura y guarda las imágenes
-    for counter in range(imagesCount):
-        ret, frame = camera.read()
-        if not ret or frame is None:
+    for counter in range(imagesCount):                                      # Captura el número de imágenes especificado
+        ret, frame = camera.read()                                          # Captura un frame de la cámara
+        if not ret or frame is None:                                        # Si no se pudo capturar el frame, muestra un mensaje de error
             print("Error: No se pudo capturar la imagen.")
             continue
-        cv2.imshow('frame', frame)
-        cv2.waitKey(25)
-        cv2.imwrite(os.path.join(classDirectory, f'{counter}.jpg'), frame)
+        cv2.imshow('frame', frame)                                          # Muestra el frame en una ventana
+        cv2.waitKey(25)                                                     # Espera 25 ms
+        cv2.imwrite(os.path.join(classDirectory, f'{counter}.jpg'), frame)  # Guarda la imagen en el directorio de la clase
 
+
+"""
+Función: main
+Descripción: Función principal que configura el entorno, abre la cámara, captura imágenes para cada clase y cierra la cámara.
+Parámetros: Ninguno.
+"""
 def main():
-    # Crea el directorio principal de datos
-    createDirectory(dataDirectory)
-    
-    # Abre la cámara
-    camera = cv2.VideoCapture(cameraIndex)
-    if not camera.isOpened():
-        print("Error: No se pudo abrir la cámara. Prueba cambiar el cameraIndex")
+    createDirectory(dataDirectory)              # Crea el directorio de datos
+
+    camera = cv2.VideoCapture(cameraIndex)      # Abre la cámara
+    if not camera.isOpened():                   # Si no se pudo abrir la cámara, se termina el programa
         return
 
-    # Captura imágenes para cada clase
-    for classId in range(numClasses):
-        captureImagesForClass(classId, imagesPerClass, camera)
+    for classId in range(numClasses):           # Captura imágenes para cada clase
+        captureImagesForClass(classId, imagesPerClass, camera)  
 
-    # Libera la cámara y cierra todas las ventanas
-    camera.release()
-    cv2.destroyAllWindows()
+    camera.release()                            # Cierra la cámara
+    cv2.destroyAllWindows()                     # Cierra todas las ventanas
 
 if __name__ == '__main__':
     main()
