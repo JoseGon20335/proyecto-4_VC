@@ -131,8 +131,11 @@ while True:                                                             # Mientr
             except Exception as e:                                      # En caso de error en la predicción, imprime un mensaje
                 print(f"Error en la predicción: {e}")
 
-    cv2.imshow('frame', frame)                                          # Muestra el frame en una ventana
-    if cv2.waitKey(1) & 0xFF == ord('q'):                               # En caso de presionar la tecla 'q', termina el programa
+    border_size = 150                                                   # Agrega un borde blanco al frame
+    frame_with_border = cv2.copyMakeBorder(frame, border_size, border_size, border_size, border_size, cv2.BORDER_CONSTANT, value=[255, 255, 255])
+    
+    cv2.imshow('frame', frame_with_border)  # Muestra el frame con el borde blanco en una ventana
+    if cv2.waitKey(1) & 0xFF == ord('q'):   # En caso de presionar la tecla 'q', termina el programa
         break
 
 # ----------------------------------------------------------------------
