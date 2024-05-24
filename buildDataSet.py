@@ -66,14 +66,16 @@ for classDir in os.listdir(dataDirectory):                                      
         results = handsDetector.process(imageRgb)                               # Procesa la imagen con el detector de manos
         if results.multi_hand_landmarks:                                        # Verifica si se detectaron manos en la imagen
 
-            for handLandmarks in results.multi_hand_landmarks:                  # Recorre los puntos de referencia de cada mano detectada
-                for landmark in handLandmarks.landmark:                         # Recorre los puntos de referencia de la mano
-                    xCoordinates.append(landmark.x)                             # Añade la coordenada x del punto de referencia
-                    yCoordinates.append(landmark.y)                             # Añade la coordenada y del punto de referencia
+            for handLandmarks in results.multi_hand_landmarks:                      # Recorre los puntos de referencia de cada mano detectada
+                xCoordinates = [landmark.x for landmark in handLandmarks.landmark]  # Obtiene todas las coordenadas x
+                yCoordinates = [landmark.y for landmark in handLandmarks.landmark]  # Obtiene todas las coordenadas y
+
+                min_x = min(xCoordinates)                                       # Encuentra el valor mínimo de x
+                min_y = min(yCoordinates)                                       # Encuentra el valor mínimo de y
 
                 for landmark in handLandmarks.landmark:                         # Recorre los puntos de referencia de la mano
-                    landmarksNormalized.append(landmark.x - min(xCoordinates))  # Normaliza la coordenada x del punto de referencia
-                    landmarksNormalized.append(landmark.y - min(yCoordinates))  # Normaliza la coordenada y del punto de referencia
+                    landmarksNormalized.append(landmark.x - min_x)              # Normaliza la coordenada x del punto de referencia
+                    landmarksNormalized.append(landmark.y - min_y)              # Normaliza la coordenada y del punto de referencia
 
             handLandmarksData.append(landmarksNormalized)                       # Añade los puntos de referencia normalizados a la lista de datos
             classLabels.append(classDir)                                        # Añade la etiqueta de la clase correspondiente

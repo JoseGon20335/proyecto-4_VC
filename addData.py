@@ -26,9 +26,7 @@ import cv2
 dataDirectory = './imgs'                            # Directorio donde se guardarán las imágenes
 
 numClasses = 26                                     # Número de clases (letras del alfabeto)
-imagesPerClass = 100                                # Número de imágenes a capturar por clase
-
-cameraIndex = 0                                     # Índice de la cámara
+imagesPerClass = 150                                # Número de imágenes a capturar por clase
 
 # ------------------------------------------------------------------
 # FUNCIONES
@@ -54,7 +52,7 @@ Parámetros:
 def captureImagesForClass(classId, imagesCount, camera):
     classDirectory = os.path.join(dataDirectory, str(classId))              # Se define el directorio de la clase
     createDirectory(classDirectory)                                         # Crea el directorio de la clase
-    print(f'Recolectando datos para la clase {classId}')                    
+    print(f'\n----- CLASE {classId}:')                                      # Muestra un mensaje con el identificador de la clase                    
 
     print("Presione enter para empezar a capturar las imágenes.")           # Muestra un mensaje para indicar al usuario que presione enter para empezar a capturar las imágenes
     input()                                                                 # Espera a que el usuario presione enter para empezar a capturar las imágenes
@@ -79,7 +77,7 @@ Parámetros: Ninguno.
 def main():
     createDirectory(dataDirectory)              # Crea el directorio de datos
 
-    camera = cv2.VideoCapture(cameraIndex)      # Abre la cámara
+    camera = cv2.VideoCapture(0)                # Abre la cámara
     if not camera.isOpened():                   # Si no se pudo abrir la cámara, se termina el programa
         return
 

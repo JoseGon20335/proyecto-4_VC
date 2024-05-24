@@ -94,9 +94,12 @@ while True:                                                             # Mientr
                 xCoordinates.append(landmark.x)                         # Añade la coordenada x del punto de referencia
                 yCoordinates.append(landmark.y)                         # Añade la coordenada y del punto de referencia
 
+            min_x = min(xCoordinates)                                   # Encuentra el valor mínimo de x
+            min_y = min(yCoordinates)                                   # Encuentra el valor mínimo de y
+
             for landmark in handLandmarks.landmark:                     # Recorre los puntos de referencia de la mano
-                dataAux.append(landmark.x - min(xCoordinates))          # Normaliza la coordenada x del punto de referencia
-                dataAux.append(landmark.y - min(yCoordinates))          # Normaliza la coordenada y del punto de referencia
+                dataAux.append(landmark.x - min_x)                      # Normaliza la coordenada x del punto de referencia
+                dataAux.append(landmark.y - min_y)                      # Normaliza la coordenada y del punto de referencia
 
         while len(dataAux) < 84:                                        # En caso de que no se detecten suficientes puntos de referencia, añade ceros
             dataAux.append(0)                                           # Añade ceros a la lista auxiliar (42 por mano, 84 en total)
