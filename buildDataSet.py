@@ -42,10 +42,6 @@ classLabels = []                                                        # Lista 
 for classDir in os.listdir(dataDirectory):                                      # Recorre las clases dentro del directorio de imágenes
     for imageFilename in os.listdir(os.path.join(dataDirectory, classDir)):     # Recorre las imágenes dentro de cada clase
 
-        landmarksNormalized = []                                                # Lista para almacenar puntos de referencia normalizados
-        xCoordinates = []                                                       # Lista para almacenar coordenadas x de los puntos de referencia           
-        yCoordinates = []                                                       # Lista para almacenar coordenadas y de los puntos de referencia
-
         imagePath = os.path.join(dataDirectory, classDir, imageFilename)        # Ruta de la imagen a procesar
         image = cv2.imread(imagePath)                                           # Lee la imagen            
         if image is None:                                                       # Verifica si la imagen se pudo leer correctamente
@@ -62,6 +58,10 @@ for classDir in os.listdir(dataDirectory):                                      
 
         imageRgb = cv2.merge((r_eq, g_eq, b_eq))                                # Une los canales ecualizados
 
+
+        landmarksNormalized = []                                                # Lista para almacenar puntos de referencia normalizados
+        xCoordinates = []                                                       # Lista para almacenar coordenadas x de los puntos de referencia           
+        yCoordinates = []                                                       # Lista para almacenar coordenadas y de los puntos de referencia
 
         results = handsDetector.process(imageRgb)                               # Procesa la imagen con el detector de manos
         if results.multi_hand_landmarks:                                        # Verifica si se detectaron manos en la imagen

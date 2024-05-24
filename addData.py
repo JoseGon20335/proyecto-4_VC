@@ -56,16 +56,8 @@ def captureImagesForClass(classId, imagesCount, camera):
     createDirectory(classDirectory)                                         # Crea el directorio de la clase
     print(f'Recolectando datos para la clase {classId}')                    
 
-    while True:                                                             # Espera a que el usuario presione "X" para empezar              
-        ret, frame = camera.read()                                          # Captura un frame de la cámara
-        if not ret or frame is None:                                        # Si no se pudo capturar el frame, muestra un mensaje de error
-            print("Error: No se pudo capturar la imagen.")
-            continue
-
-        cv2.putText(frame, 'Presiona "X" para empezar.', (100, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 3, cv2.LINE_AA)     # Muestra un mensaje en el frame
-        cv2.imshow('frame', frame)                                          # Muestra el frame en una ventana
-        if cv2.waitKey(25) == ord('x'):                                     # Si el usuario presiona "X", se rompe el ciclo
-            break
+    print("Presione enter para empezar a capturar las imágenes.")           # Muestra un mensaje para indicar al usuario que presione enter para empezar a capturar las imágenes
+    input()                                                                 # Espera a que el usuario presione enter para empezar a capturar las imágenes
 
     for counter in range(imagesCount):                                      # Captura el número de imágenes especificado
         ret, frame = camera.read()                                          # Captura un frame de la cámara

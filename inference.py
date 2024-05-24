@@ -55,9 +55,6 @@ labelsDict = {                                                                  
 # CAPTURA DE VIDEO Y PROCESAMIENTO DE IMÁGENES
 
 while True:                                                             # Mientras la cámara esté abierta            
-    dataAux = []                                                        # Lista auxiliar para almacenar coordenadas normalizadas
-    xCoordinates = []                                                   # Lista para almacenar coordenadas x de los puntos de referencia
-    yCoordinates = []                                                   # Lista para almacenar coordenadas y de los puntos de referencia
 
     ret, frame = cap.read()                                             # Captura un frame de la cámara
     if not ret:                                                         # En caso de error al capturar el frame, imprime un mensaje y termina el programa            
@@ -76,6 +73,10 @@ while True:                                                             # Mientr
 
     frameRgb = cv2.merge((r_eq, g_eq, b_eq))                            # Une los canales ecualizados
 
+
+    dataAux = []                                                        # Lista auxiliar para almacenar coordenadas normalizadas
+    xCoordinates = []                                                   # Lista para almacenar coordenadas x de los puntos de referencia
+    yCoordinates = []                                                   # Lista para almacenar coordenadas y de los puntos de referencia
 
     results = handsDetector.process(frameRgb)                           # Procesa el frame con el detector de manos
     if results.multi_hand_landmarks:                                    # Verifica si se detectaron manos en el frame
