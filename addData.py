@@ -72,8 +72,10 @@ def captureImagesForClass(classId, imagesCount, camera):
         if not ret or frame is None:                                        # Si no se pudo capturar el frame, muestra un mensaje de error
             print("Error: No se pudo capturar la imagen.")
             continue
+        
         cv2.imshow('frame', frame)                                          # Muestra el frame en una ventana
         cv2.waitKey(25)                                                     # Espera 25 ms
+
         cv2.imwrite(os.path.join(classDirectory, f'{counter}.jpg'), frame)  # Guarda la imagen en el directorio de la clase
 
 
