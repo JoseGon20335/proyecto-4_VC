@@ -26,7 +26,7 @@ import cv2
 dataDirectory = './imgs'                            # Directorio donde se guardarán las imágenes
 
 numClasses = 26                                     # Número de clases (letras del alfabeto)
-imagesPerClass = 150                                # Número de imágenes a capturar por clase
+imagesPerClass = 100                                # Número de imágenes a capturar por clase
 
 # ------------------------------------------------------------------
 # FUNCIONES
