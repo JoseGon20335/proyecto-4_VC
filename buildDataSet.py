@@ -48,16 +48,7 @@ for classDir in os.listdir(dataDirectory):                                      
             print(f"Error: No se pudo leer la imagen {imagePath}")
             continue
 
-
         imageRgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)                       # Convierte la imagen a RGB       
-        r, g, b = cv2.split(imageRgb)                                           # Separa los canales de la imagen
-
-        r_eq = cv2.equalizeHist(r)                                              # Aplica histogram equalization a cada canal       
-        g_eq = cv2.equalizeHist(g)
-        b_eq = cv2.equalizeHist(b)
-
-        imageRgb = cv2.merge((r_eq, g_eq, b_eq))                                # Une los canales ecualizados
-
 
         landmarksNormalized = []                                                # Lista para almacenar puntos de referencia normalizados
         xCoordinates = []                                                       # Lista para almacenar coordenadas x de los puntos de referencia           

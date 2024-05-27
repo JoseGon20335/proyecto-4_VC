@@ -63,16 +63,7 @@ while True:                                                             # Mientr
 
     H, W, _ = frame.shape                                               # Obtiene las dimensiones del frame
 
-
     frameRgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)                   # Convierte el frame a RGB
-    r, g, b = cv2.split(frameRgb)                                       # Separa los canales de la imagen
-
-    r_eq = cv2.equalizeHist(r)                                          # Aplica histogram equalization a cada canal       
-    g_eq = cv2.equalizeHist(g)
-    b_eq = cv2.equalizeHist(b)
-
-    frameRgb = cv2.merge((r_eq, g_eq, b_eq))                            # Une los canales ecualizados
-
 
     dataAux = []                                                        # Lista auxiliar para almacenar coordenadas normalizadas
     xCoordinates = []                                                   # Lista para almacenar coordenadas x de los puntos de referencia
